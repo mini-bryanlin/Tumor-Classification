@@ -37,6 +37,35 @@ class Tanh(Activation):
         tanh = lambda x: np.tanh(x)
         tanh_prime = lambda x: 1- np.tanh(x) ** 2
         super().__init__(tanh,tanh_prime)
-class MSE(Activation):
-    def __init(self):
-        mse = lambda x: 
+def mse(y_hat, y_true):
+    return (np.mean(np.power((y_hat- y_true),2)))/2
+
+def mse_prime(y_true,y_pred):
+    return (y_pred-y_true)/np.size(y_true)
+
+def predict(network,input):
+    output = input
+    for layer in network:
+        output = layer.forward(output)
+    return output
+def train(network,alpha,epochs,loss, loss_prime,x,y,prin = True):
+    for time in range(epochs):
+        #calculate loss
+        error = 0 
+        for x, y in zip(x,y):
+            prediction = predict(network,x)
+            error += loss(y,prediction)
+
+            #gradient descent
+            gradient = loss_prime(y, prediction)
+            for layer in network[::-1]:
+                gradient = layer.backwards(gradient,alpha)
+            
+        error /= len(x)
+
+        if prin:
+            print(f"{e + 1}/{epochs}, error={error}")
+
+        
+            
+
