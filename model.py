@@ -16,8 +16,8 @@ network = [
     act2
     
 ]
-
-train(network,mse,mse_prime,X,Y, epochs=10000)
+# (network,alpha,epochs,loss, loss_prime,x,y,prin = True)
+train(network,0.01,10000,mse,mse_prime,X,Y)
 print(predict(network, X[1]))
 
 

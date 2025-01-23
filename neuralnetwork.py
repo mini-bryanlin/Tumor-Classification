@@ -52,43 +52,20 @@ def predict(network,input,verbose = False):
             print(layer.name, output.shape)
         output = layer.forward(output)
     return output
-# def train(network,alpha,epochs,loss, loss_prime,x,y,prin = True):
+def train(network,alpha,epochs,loss, loss_prime,x_train,y_train,prin = True):
     
-    
-#     error = 0 
-#     for x, y in zip(x,y):
-#         # print(x,y)
-#         prediction = predict(network,x)
-#         error += loss(y,prediction)
+    for time in range(epochs):
+        error = 0 
+        for x, y in zip(x_train,y_train):
+            # print(x,y)
+            prediction = predict(network,x)
+            error += loss(y,prediction)
 
-#         #gradient descent
-#         gradient = loss_prime(y, prediction)
-#         for layer in network[::-1]:
-#             gradient = layer.backward(gradient,alpha)
-        
-#     error /= len(x)
-# def epochs(times,network,alpha,epochs,loss, loss_prime,x,y,verbose = True ):
-#     for time in range(times):
-#         train(network,alpha,epochs,loss, loss_prime,x,y,prin = True)
-#         if verbose:
-#             print(f"{time + 1}/{epochs}, error={error}")
-
-
-def train(network, loss, loss_prime, x_train, y_train, epochs = 1000, learning_rate = 0.01, verbose = True):
-    for e in range(epochs):
-        error = 0
-        for x, y in zip(x_train, y_train):
-            # forward
-            output = predict(network, x)
-
-            # error
-            error += loss(y, output)
-
-            # backward
-            grad = loss_prime(y, output)
-            for layer in reversed(network):
-                grad = layer.backward(grad, learning_rate)
-
-        error /= len(x_train)
-        if verbose:
-            print(f"{e + 1}/{epochs}, error={error}")
+            #gradient descent
+            gradient = loss_prime(y, prediction)
+            for layer in network[::-1]:
+                gradient = layer.backward(gradient,alpha)
+            
+        error /= len(x)
+        if prin:
+            print(f"{time + 1}/{epochs}, error={error}")
