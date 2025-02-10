@@ -39,6 +39,16 @@ class Tanh(Activation):
         tanh = lambda x: np.tanh(x)
         tanh_prime = lambda x: 1- np.tanh(x) ** 2
         super().__init__(tanh,tanh_prime)
+class Sigmoid(Activation):
+    def __init__(self, name):
+        self.name = name
+        def sigmoid(x):
+            return 1/(1+np.exp(-x))
+        def sigmoid_prime(x):
+            s = sigmoid(x)
+            return x*(1-s)
+        super().__init__(sigmoid,sigmoid_prime)
+
 def mse(y_hat, y_true):
     return (np.mean(np.power((y_hat- y_true),2)))/2
 
@@ -69,3 +79,8 @@ def train(network,alpha,epochs,loss, loss_prime,x_train,y_train,prin = True):
         error /= len(x)
         if prin:
             print(f"{time + 1}/{epochs}, error={error}")
+def bce(y_true, y_pred):
+    return -np.mean(y_true*np.log(y_pred)+(1-y_true)*np.log(1-y_pred))
+
+def bce_prime(y_true, y_pred):
+    return ((1-y_true)/(1-y_pred)-y_true/y_pred)/np.size(y_true)
