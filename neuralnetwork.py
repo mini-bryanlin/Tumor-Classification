@@ -61,7 +61,7 @@ def train(network,alpha,epochs,loss, loss_prime,x_train,y_train,prin = True):
             prediction = predict(network,x)
             error += loss(y,prediction)
 
-            #gradient descent
+            #gradient descent 
             gradient = loss_prime(y, prediction)
             for layer in network[::-1]:
                 gradient = layer.backward(gradient,alpha)
