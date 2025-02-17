@@ -43,10 +43,10 @@ class Sigmoid(Activation):
     def __init__(self, name):
         self.name = name
         def sigmoid(x):
-            return 1/(1+np.exp(-x))
+            return 1/(1+np.exp(-1*x))
         def sigmoid_prime(x):
             s = sigmoid(x)
-            return x*(1-s)
+            return s*(1-s)
         super().__init__(sigmoid,sigmoid_prime)
 
 def mse(y_hat, y_true):
@@ -69,6 +69,7 @@ def train(network,alpha,epochs,loss, loss_prime,x_train,y_train,prin = True):
         for x, y in zip(x_train,y_train):
             # print(x,y)
             prediction = predict(network,x)
+            
             error += loss(y,prediction)
 
             #gradient descent 

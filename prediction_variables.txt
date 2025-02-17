@@ -1,0 +1,1 @@
+['radius_mean', 'perimeter_mean', 'area_mean', 'compactness_mean', 'concave points_mean', 'concavity_mean', 'fractal_dimension_se', 'radius_se', 'radius_worst', 'perimeter_worst', 'area_worst', 'concave points_worst']
