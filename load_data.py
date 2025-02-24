@@ -12,3 +12,7 @@ def load_data(file_path,features):
     test_y = test['diagnosis']
     
     return train_x,train_y,test_x,test_y, len(train_x)
+def standardize(data):
+    mean = data.mean()
+    std = data.std()
+    return (data-mean)/std

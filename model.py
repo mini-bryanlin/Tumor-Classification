@@ -4,10 +4,11 @@ import numpy as np
 import pandas as pd
 from Saving_Weights import save
 from loading_weights import load_weights
-from load_data import load_data
+from load_data import load_data, standardize
 features =["radius_mean", "perimeter_mean", "area_mean", "compactness_mean","concave points_mean", "concavity_mean","fractal_dimension_se","radius_se","radius_worst","perimeter_worst","area_worst","concave points_worst",]
 train_x,train_y,test_x,test_y, length = load_data("~/Tumor-Classification/breast-cancer.csv",features)
-
+train_x = standardize(train_x)
+test_x = standardize(test_x)
 
 X = np.reshape(train_x, (length,12,1))
 Y = np.reshape(train_y, (length, 1, 1))
@@ -33,7 +34,7 @@ network = [
 ]
 print(predict(network,X[1]))
 # (network,alpha,epochs,loss, loss_prime,x,y,prin = True)
-train(network,0.1,500,bce,bce_prime,X,Y,True)
+train(network,1e-5,500,bce,bce_prime,X,Y,True)
 # save(network)
 print(predict(network,X[1]))
 

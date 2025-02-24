@@ -12,19 +12,33 @@ class Dense(Layer):
     def __init__(self,input_size,output_size,name):
         self.name = name
         # Xavier/Glorot initialization for better training stability
-        limit = np.sqrt(6 / (input_size + output_size))
-        self.weights = np.random.uniform(-limit, limit, (output_size, input_size))
-        self.bias = np.zeros((output_size, 1))  # Initialize bias to zeros
-    
+        limit = np.sqrt(2.0 / (input_size + output_size))
+        self.weights = np.random.normal(0, limit, (output_size, input_size))
+        self.bias = np.zeros((output_size, 1))
+        self.weight_momentum = np.zeros_like(self.weights)
+        self.bias_momentum = np.zeros_like(self.bias)
     
     def forward(self, input):
         self.input = input
         return np.dot(self.weights,self.input) + self.bias
     def backward(self, output_gradient, learning_rate):
-        weights_gardient = np.dot(output_gradient,self.input.T)
-        self.weights -= learning_rate*weights_gardient
-        self.bias -= learning_rate * output_gradient
-        return np.dot(self.weights.T, output_gradient)
+        # weights_gardient = np.dot(output_gradient,self.input.T)
+        # self.weights -= learning_rate*weights_gardient
+        # self.bias -= learning_rate * output_gradient
+        # return np.dot(self.weights.T, output_gradient)
+        weights_gradient = np.dot(output_gradient, self.input.T)
+        input_gradient = np.dot(self.weights.T, output_gradient)
+        
+        # Apply momentum
+        momentum = 0.9
+        self.weight_momentum = momentum * self.weight_momentum - learning_rate * weights_gradient
+        self.bias_momentum = momentum * self.bias_momentum - learning_rate * output_gradient
+        
+        # Update weights and bias
+        self.weights += self.weight_momentum
+        self.bias += self.bias_momentum
+        
+        return input_gradient
 
 class Activation(Layer):
     def __init__(self,activation, activation_prime):
@@ -103,5 +117,6 @@ def bce(y_true, y_pred):
 def bce_prime(y_true, y_pred):
     epsilon = 1e-15
     y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
+    return (y_pred - y_true) / (y_pred * (1 - y_pred) * np.size(y_true))  # Fixed derivative
+
 
