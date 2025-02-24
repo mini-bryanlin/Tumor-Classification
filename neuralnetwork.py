@@ -11,8 +11,11 @@ class Layer:
 class Dense(Layer):
     def __init__(self,input_size,output_size,name):
         self.name = name
-        self.weights = np.random.rand(output_size,input_size)
-        self.bias = np.random.rand(output_size,1)
+        # Xavier/Glorot initialization for better training stability
+        limit = np.sqrt(6 / (input_size + output_size))
+        self.weights = np.random.uniform(-limit, limit, (output_size, input_size))
+        self.bias = np.zeros((output_size, 1))  # Initialize bias to zeros
+    
     
     def forward(self, input):
         self.input = input
@@ -43,12 +46,23 @@ class Sigmoid(Activation):
     def __init__(self, name):
         self.name = name
         def sigmoid(x):
-            return 1/(1+np.exp(-1*x))
+            # Clip x to prevent overflow
+            x = np.clip(x, -500, 500)
+            return 1 / (1 + np.exp(-x))
         def sigmoid_prime(x):
             s = sigmoid(x)
             return s*(1-s)
         super().__init__(sigmoid,sigmoid_prime)
-
+class ReLU(Activation):
+    def __init__(self, name):
+        self.name = name
+        # ReLU function: returns x if x > 0, else returns 0
+        relu = lambda x: np.maximum(0, x)
+        
+        # ReLU derivative: returns 1 if x > 0, else returns 0
+        relu_prime = lambda x: np.where(x > 0, 1, 0)
+        
+        super().__init__(relu, relu_prime)
 def mse(y_hat, y_true):
     return (np.mean(np.power((y_hat- y_true),2)))/2
 
@@ -81,7 +95,13 @@ def train(network,alpha,epochs,loss, loss_prime,x_train,y_train,prin = True):
         if prin:
             print(f"{time + 1}/{epochs}, error={error}")
 def bce(y_true, y_pred):
-    return -np.mean(y_true*np.log(y_pred)+(1-y_true)*np.log(1-y_pred))
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+
 
 def bce_prime(y_true, y_pred):
-    return ((1-y_true)/(1-y_pred)-y_true/y_pred)/np.size(y_true)
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
+
