@@ -5,6 +5,7 @@ import pandas as pd
 from Saving_Weights import save
 from loading_weights import load_weights
 from load_data import load_data, standardize
+from test import test
 features =["radius_mean", "perimeter_mean", "area_mean", "compactness_mean","concave points_mean", "concavity_mean","fractal_dimension_se","radius_se","radius_worst","perimeter_worst","area_worst","concave points_worst",]
 train_x,train_y,test_x,test_y, length = load_data("~/Tumor-Classification/breast-cancer.csv",features)
 train_x = standardize(train_x)
@@ -12,7 +13,9 @@ test_x = standardize(test_x)
 
 X = np.reshape(train_x, (length,12,1))
 Y = np.reshape(train_y, (length, 1, 1))
-print(Y)
+X_test = np.reshape(test_x, (len(test_x), 12, 1))
+Y_test = np.reshape(test_y, (len(test_y), 1, 1))
+
 
 layer1 = Dense(12,24,"one")
 act1 = ReLU("act1")
@@ -32,12 +35,13 @@ network = [
     layer4,
     finalact
 ]
-print(predict(network,X[1]))
-# (network,alpha,epochs,loss, loss_prime,x,y,prin = True)
-train(network,1e-5,500,bce,bce_prime,X,Y,True)
-# save(network)
-print(predict(network,X[1]))
 
+# (network,alpha,epochs,loss, loss_prime,x,y,prin = True)
+train(network,1e-5,1000,bce,bce_prime,X,Y,True)
+# save(network)
+
+
+print(test(network, X_test, Y_test))
 
 # zeroes = np.ze00ros((2,3))
 # ones = np.ones((3,1))
