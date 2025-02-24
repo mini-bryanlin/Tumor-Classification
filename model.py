@@ -7,7 +7,7 @@ from loading_weights import load_weights
 from load_data import load_data, standardize
 from test import test
 features =["radius_mean", "perimeter_mean", "area_mean", "compactness_mean","concave points_mean", "concavity_mean","fractal_dimension_se","radius_se","radius_worst","perimeter_worst","area_worst","concave points_worst",]
-train_x,train_y,test_x,test_y, length = load_data("~/Tumor-Classification/breast-cancer.csv",features)
+train_x,train_y,test_x,test_y, length = load_data("~/Tumor-Classification/breast-cancer.csv",features,0.2)
 train_x = standardize(train_x)
 test_x = standardize(test_x)
 
@@ -36,10 +36,10 @@ network = [
     finalact
 ]
 
-# (network,alpha,epochs,loss, loss_prime,x,y,prin = True)
-train(network,1e-5,1000,bce,bce_prime,X,Y,True)
-# save(network)
-
+#(network,alpha,epochs,loss, loss_prime,x,y,prin = True)
+#train(network,1e-5,2000,bce,bce_prime,X,Y,True)
+#save(network)
+load_weights(network)
 
 print(test(network, X_test, Y_test))
 
