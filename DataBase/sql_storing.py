@@ -14,7 +14,13 @@ def get_header(file_path):
     column_headers = list(data.columns.values)
     hashmap = {}
     for head in range(len(column_headers)):
-        hashmap[column_headers[head]] = str(type(sample[head]))
+        data_type = str(type(sample[head]))
+        ls = data_type.split("'")
+        if ls[1] =='str':
+            hashmap[column_headers[head]] = "char"
+        else:
+            hashmap[column_headers[head]] = ls[1]
+
     print(hashmap)
     return hashmap
 
@@ -31,7 +37,6 @@ mydb = mysql.connector.connect(
 bc_file = os.path.expanduser("~/Tumor-Classification/breast-cancer.csv")
 headers = get_header("~/Tumor-Classification/breast-cancer.csv")
 mycursor = mydb.cursor()
-# mycursor.execute("DROP TABLE BC_DATA")
 def load_csv_to_mysql(csv_file_path, table_name, if_exists='replace', 
                      host='localhost', user='root', password='', database=''):
    
@@ -50,8 +55,8 @@ def load_csv_to_mysql(csv_file_path, table_name, if_exists='replace',
     print(f"Data from {csv_file_path} successfully loaded to {table_name} table in MySQL database {database}")
 # load_csv_to_mysql(file_path,"BC_DATA",password = password, database= "neuralnetwork")
 
-# mycursor.execute("drop table BC_DATA")
-# mycursor.execute("create table BC_DATA (id int(255))")
-# for header in headers:
-#     if header != "id":
-#         mycursor.execute(f"alter table BC_DATA add {header} FLOAT ")
+mycursor.execute("drop table BC_DATA")
+mycursor.execute(f"create table BC_DATA (id {headers['id']} )")
+for header in headers:
+    if header != "id":
+        mycursor.execute(f"alter table BC_DATA add {header} {headers[header]} ")
