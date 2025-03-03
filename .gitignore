@@ -1,4 +1,24 @@
-tempCodeRunner.py
-temp/
-.vscode/
-settings.json
+# VSCode folder
+.vscode/*
+
+# Allow specific files if needed
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# Specifically ignore settings.json
+.vscode/settings.json
+
+# Temporary files
+*.tmp
+*.temp
+.history/
+*.swp
+*.swo
+*~
+
+# VSCode workspace files
+*.code-workspace
+
+# Local history
+.history/
+.ionide/
