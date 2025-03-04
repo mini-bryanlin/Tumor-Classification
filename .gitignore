@@ -22,3 +22,4 @@
 # Local history
 .history/
 .ionide/
+__pycache__/*
