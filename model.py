@@ -6,7 +6,9 @@ from Saving_Weights import save
 from loading_weights import load_weights
 from load_data import load_data, standardize
 from test import test
-features =["radius_mean", "perimeter_mean", "area_mean", "compactness_mean","concave points_mean", "concavity_mean","fractal_dimension_se","radius_se","radius_worst","perimeter_worst","area_worst","concave points_worst",]
+import mysql.connector
+import os
+features =["radius_mean", "perimeter_mean", "area_mean", "compactness_mean","concave_points_mean", "concavity_mean","fractal_dimension_se","radius_se","radius_worst","perimeter_worst","area_worst","concave_points_worst",]
 train_x,train_y,test_x,test_y, length = load_data("~/Tumor-Classification/breast-cancer.csv",features,0.2)
 train_x = standardize(train_x)
 test_x = standardize(test_x)
@@ -39,8 +41,39 @@ network = [
 #(network,alpha,epochs,loss, loss_prime,x,y,prin = True)
 #train(network,1e-5,2000,bce,bce_prime,X,Y,True)
 #save(network)
-load_weights(network)
+# load_weights(network)
+def load_weights_db(network):
+    for layer in network:
+        if isinstance(layer,Dense):
+            #weights
+            name = layer.name
+            mycursor.execute((f"SELECT * FROM layer{name}_weights"))
+            myresult = mycursor.fetchall()
+            weight = np.array(myresult)
+            layer.weights = weight
+            print(weight)
+            print("Loaded weights:", layer.name)
+            #bias
+            mycursor.execute((f"SELECT * FROM layer{name}_bias"))
+            myresult = mycursor.fetchall()
+            bias = np.array(myresult)
+            layer.bias = bias
+            print(bias)
+            print("Loaded bias:", layer.name)
 
+file_path = os.path.expanduser("~/password/sql.txt")
+file = open(file_path,'r')
+password = file.readline()
+mydb = mysql.connector.connect(
+    host = "localhost",
+    user = "root",
+    password = password,
+    database = "neuralnetwork"
+    
+)
+mycursor = mydb.cursor()
+
+load_weights_db(network)
 print(test(network, X_test, Y_test))
 
 # zeroes = np.ze00ros((2,3))
